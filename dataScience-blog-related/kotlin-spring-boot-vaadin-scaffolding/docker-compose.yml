@@ -1,0 +1,9 @@
+version: '2'
+services:
+  mongo:
+    image: mongo:3.2.10
+    volumes:
+      - ./dev/mongodbdata:/data/db
+    ports:
+      - "27017:27017"
+    command: --smallfiles --profile=1 --slowms=0

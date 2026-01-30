@@ -1,0 +1,22 @@
+#!/bin/bash
+
+# Get the current directory
+current_dir=$(pwd)
+
+# Loop through all items in the current directory
+for item in "$current_dir"/*; do
+    # Check if the item is a directory
+    if [ -d "$item" ]; then
+        # Change into the directory
+        cd "$item" || { echo "Error: Could not change directory to $item"; exit 1; }
+        
+        # Execute the echo command
+        echo "Currently in directory: $(pwd)"
+
+	git add .
+        git commit -m "commit done"
+
+        # Change back to the original directory
+        cd "$current_dir" || { echo "Error: Could not change back to $current_dir"; exit 1; }
+    fi
+done

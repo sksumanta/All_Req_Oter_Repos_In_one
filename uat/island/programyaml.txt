@@ -1,0 +1,46 @@
+---
+#########################################################
+# Load variables from files
+#########################################################
+
+  - name: Load the "{{ tier }}" tier deployment variables
+    include_vars:
+      dir: "{{ staging.scm }}/{{ mydomain }}"
+      files_matching: "{{ mydomain | default('skipping') }}.yaml"
+
+  - name: check the correct vriable file has been loaded
+    debug:
+      msg:
+        - the value of theEnv_domain "{{ mydomain }}/{{ mydomain | default('skipping') }}.yaml"
+        - theEnv_trexoneweb "{{ theEnv_trexoneweb }}"
+
+  - name: check the partern in the file
+    script:                      ######################### execute shell script in ansible ################################
+      cmd: /home/ujam/ansibleDir/demoProject/roles/loadVars/tasks/getfile.sh  "{{ item.package_name }}" "{{ item.package_label }}"
+    with_items: "{{ package_details.first_package }}"
+    register: fileName
+
+  - name: print the output for fileName variable
+    set_fact:
+      buildname: "{{ fileName.results|selectattr('stdout','defined')| map(attribute='stdout')|list|unique }}"
+    with_items: "{{ fileName.results }}"
+
+  - name: print the output for buildname
+    debug:
+      var: buildname
+[ujam@yamlServer tasks]$
+
+
+
+[ujam@yamlServer tasks]$ cat getfile.sh
+#!/bin/bash
+vir1=$1
+vir2=$2
+build()
+{
+val=`grep -i $vir1 ~/abc.txt | grep -i $vir2`
+echo $val
+}
+
+build $vir1 $vir2
+[ujam@yamlServer tasks]$

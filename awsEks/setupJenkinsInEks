@@ -1,0 +1,70 @@
+
+kubectl create namespace eks-jenkins-app
+
+
+deployment.yaml 
+====================
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jenkins-deployment
+  namespace: eks-jenkins-app
+  labels:
+    app: jenkins-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: jenkins-app
+  template:
+    metadata:
+      labels:
+        app: jenkins-app
+    spec:
+      containers:
+        - name: jenkins
+          image: sksumanta/jenkinsmaster:2.336
+          ports:
+            - containerPort: 8080
+
+========================================================			
+			
+ kubectl apply -f deployment.yaml			
+ kubectl get deployments --namespace=eks-jenkins-app
+
+=========================================================
+apiVersion: v1
+kind: Service
+metadata:
+  name: jenkinsService
+spec:
+  type: NodePort
+  selector:
+    app: jenkinsApp
+  ports:
+    - nodePort: 31479
+      port: 8080
+      targetPort: 8080			
+	  
+
+ kubectl apply -f service.yaml --namespace=eks-jenkins-app
+
+ kubectl get services --namespace=eks-jenkins-app
+ 
+ kubectl get pods -o wide --namespace=eks-jenkins-app   # verify pods of our application are running
+ 
+ kubectl get nodes -o wide --namespace=eks-jenkins-app # To get the external IP addresses of those nodes 
+  
+ copy the container file from pod to local system
+========================================================= 
+ kubectl cp eks-jenkins-app/jenkins-deployment-6897479d78-lq6hb:/var/lib/jenkins/secrets/initialAdminPassword  jenkinsInitialAdminPassword 
+ 
+ 
+ Debug eks cluster
+ ===================
+  kubectl get events --namespace=eks-jenkins-app  # To get all the events that occurred in your cluster
+  kubectl get pods -o wide --namespace=eks-jenkins-app   # verify pods of our application are running
+  kubectl describe pod   YOUR_POD_NAME  --namespace=eks-jenkins-app # Events history of your pod
+  

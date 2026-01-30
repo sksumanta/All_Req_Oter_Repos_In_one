@@ -1,0 +1,6 @@
+---
+- name: Check Uptime for Servers
+  hosts: all
+  roles:
+   - check_uptime
+

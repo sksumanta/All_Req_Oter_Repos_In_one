@@ -1,0 +1,51 @@
+
+
+pipeline {
+    agent any
+
+    //tools {
+    //     maven 'maven'
+    //     jdk 'java'
+    //}
+	
+    stages {
+        stage('Getting the project from GIT') {
+            steps {
+                echo 'Pulling..';
+			    cleanWs()
+                git branch: 'master',
+                credentialsId: '247052cb-e64994213',
+				url: 'https://github.com/sksumanta/helloWorld_mvn_jenkins.git' ;
+            
+            }
+        }
+        
+    stage('Cleaning the project') {
+             
+            steps {
+                echo 'cleaning project ...'
+                sh '''
+                /opt/apache-maven-3.9.9/bin/mvn clean
+                '''
+            }
+        }
+        
+    stage('Artifact Construction') {
+             
+            steps {
+                echo "artificat contruction"
+                sh '''
+                /opt/apache-maven-3.9.9/bin/mvn  package
+                '''
+            }
+			post {
+                success {
+                    echo "Now Archiving the Artifacts....."
+                    archiveArtifacts artifacts: '**/*.jar'
+                }
+            }
+        }
+
+    }
+}
+

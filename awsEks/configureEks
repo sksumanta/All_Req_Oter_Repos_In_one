@@ -1,0 +1,179 @@
+
+
+To configure Eks 
+======================
+
+	We need to install the below tools to configure Eks
+
+AWS CLI
+Configure your AWS credentials with the associated region.
+Aws-iam-authenticator
+Docker engine 
+kubectl  and  eksctl
+Build image
+Create an EKS Cluster using eksctl.
+Verify that EKS nodes are running and available.
+Create an AWS ECR Repository / Docker Repository for the Jenkins Manager and Jenkins Agent.
+
+
+
+
+Install docker in centos8
+==============================
+
+ sudo  sed -i 's/mirrorlist/#mirrorlist/g' /etc/yum.repos.d/CentOS-*
+ 
+ sudo sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g' /etc/yum.repos.d/CentOS-*
+ sudo yum -y update
+ sudo yum install -y epel-release net-tools  wget  tree  unzip  openssh* java-1.8.0-openjdk* git
+ sudo systemctl restart sshd
+ sudo systemctl status sshd
+ sudo systemctl enable sshd
+ sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+ sudo yum install -y docker-ce
+
+# Create user
+ sudo useradd dkCicd
+ sudo passwd dkCicd     # create password for the user
+
+# provide sudo access to the user
+ sudo vi /etc/sudoers
+        # Allow the devops user to do same thing without a password
+        dkCicd        ALL=(ALL)       NOPASSWD: ALL
+
+ sudo usermod -a -G docker dkCicd
+ sudo chmod 666 /var/run/docker.sock
+ sudo systemctl enable docker.service
+ sudo service docker start
+ sudo systemctl daemon-reload
+ docker --version
+ sudo netstat -tulpn | grep LISTEN
+
+Install AWS CLI
+===========================
+
+sudo dnf install python3-pip
+pip3 install awscli --upgrade --user
+aws --version
+aws configure
+        ====================================== fill the below details ===================================================================
+	|AWS Access Key ID [****************LYC6]: (AKIAWJYNWF4RLYC6   get it for the iam user who need cli access)                      |
+	|AWS Secret Access Key [****************Piwu]: (u/kWUTiRDfsL7+1L4Mocrrk8GxAV7QCA/cZu get it for the iam user who need cli access)|
+	|Default region name [ap-south-1]: ap-south-1											 |
+	|Default output format [json]: json												 |
+	=================================================================================================================================
+aws sts get-caller-identity
+
+Setup EKS in aws centos8 instance
+===========================
+step1 -- "aws configure" should have the user who created the EKS cluster
+
+https://octopus.com/blog/eks-cluster-aws 
+
+https://serverhealers.com/blog/amazon-eks-using-aws-management-console-and-aws-cli
+
+create Eks cluster 
+======================
+https://eksctl.io/usage/creating-and-managing-clusters/
+
+
+Run Rancher container
+============================
+docker run -d --restart=unless-stopped  -p 8188:80 \
+   -p 8443:443   --name rancher2_5_13  --privileged rancher/rancher:v2.5.13-linux-amd64
+			
+			or
+	using openssl run rancher
+	==========================
+			
+docker run -d --restart=unless-stopped \
+  -p 8188:80 -p 8443:443 \
+   --name rancher2_5_13 \
+  -v /home/dkCicd/rancherCerts/cert.pem:/etc/rancher/ssl/cert.pem  \
+  -v /home/dkCicd/rancherCerts/key.pem:/etc/rancher/ssl/key.pem  \
+  -v /home/dkCicd/rancherCerts/ca.pem:/etc/rancher/ssl/cacerts.pem \
+  rancher/rancher:v2.5.13-linux-amd64
+
+  
+
+
+
+
+
+
+
+==================================================================================================================================
+
+
+
+
+Install docker in centos8
+==============================
+
+ sudo  sed -i 's/mirrorlist/#mirrorlist/g' /etc/yum.repos.d/CentOS-*
+ 
+ sudo sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g' /etc/yum.repos.d/CentOS-*
+ sudo yum -y update
+ sudo yum install -y epel-release net-tools  wget  tree  unzip  openssh* java-1.8.0-openjdk* git
+ sudo systemctl restart sshd
+ sudo systemctl status sshd
+ sudo systemctl enable sshd
+ sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+ sudo yum install -y docker-ce
+
+# Create user
+ sudo useradd dkCicd
+ sudo passwd dkCicd     # create password for the user
+
+# provide sudo access to the user
+ sudo vi /etc/sudoers
+        # Allow the devops user to do same thing without a password
+        dkCicd        ALL=(ALL)       NOPASSWD: ALL
+
+ sudo usermod -a -G docker dkCicd
+ sudo chmod 666 /var/run/docker.sock
+ sudo systemctl enable docker.service
+ sudo service docker start
+ sudo systemctl daemon-reload
+ docker --version
+
+Run Rancher container
+============================
+docker run -d --restart=unless-stopped  -p 8188:80 \
+   -p 8443:443   --name rancher2_5_13  --privileged rancher/rancher:v2.5.13-linux-amd64
+			
+			or
+	using openssl run rancher
+	==========================
+			
+docker run -d --restart=unless-stopped \
+  -p 8188:80 -p 8443:443 \
+   --name rancher2_5_13 \
+  -v /home/dkCicd/rancherCerts/cert.pem:/etc/rancher/ssl/cert.pem  \
+  -v /home/dkCicd/rancherCerts/key.pem:/etc/rancher/ssl/key.pem  \
+  -v /home/dkCicd/rancherCerts/ca.pem:/etc/rancher/ssl/cacerts.pem \
+  rancher/rancher:v2.5.13-linux-amd64
+
+
+Describe AWS eks cluster
+============================
+aws eks describe-cluster --name devEksCluster --region=ap-south-1
+
+Add /home/dkCicd/.kube/config
+=====================================
+
+aws eks update-kubeconfig \
+  --region ap-south-1 \
+  --name devEksCluster
+  
+  
+  
+error 
+=====
+	docker: Error response from daemon: driver failed programming external connectivity on endpoint 
+solution
+========
+	sudo service docker stop
+	sudo service docker start
+	docker run -d -p 8084:8080 --name jenkinsMaster jenkinsmaster:2.336
+	

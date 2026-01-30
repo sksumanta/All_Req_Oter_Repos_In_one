@@ -1,0 +1,62 @@
+ 
+
+##############################################################################
+
+# Environment Details
+
+##############################################################################
+
+theEnv: "uat"
+
+theEnv_name: "ISLAND_UAT"
+
+theEnv_domain: "islu01"
+
+theEnv_artifact_label: "island"
+
+theEnv_trexoneweb: "http://192.168.33.99:8080/islu01/gameoflife/"
+
+##############################################################################
+
+# tomcat Details for Domain 
+
+##############################################################################
+build_org:
+    product_suite:
+    build_developer:
+    build_reviewer:
+    build_tester:
+build_details:
+    change_type: # promote/defect/patch
+    change_id:
+    jira_card: ABC_000
+package_details:
+    first_package:
+       - package_name: a345gdere
+         package_label: 202016042405
+       - package_name: a345fdere
+         package_label: 202030042405    
+    sec_package: 
+       -   # ​​when: package_details.up_package|length > 0
+    third_package:
+       - package_name: 
+         package_label: 
+my_deployment:
+    my_deployment_date: "YYYY/MM/DD"
+    my_deployment_areas:
+        my: true
+    my_build_test:
+        sanity: false
+        sanity_result: false
+        regression: false
+your_deployment:
+    your_deployment_date:
+    # All deployment areas should be false and developer should set it to true based on requirements. It owns mnay challanges
+    # Or, set your_deployment_areas to true and deploy change to all area on your level. This has its own challanges.
+    your_deployment_areas:
+        your: false
+        qa1: false
+        qa8: false
+    your_build_test:
+        sanity: false
+        regression: false

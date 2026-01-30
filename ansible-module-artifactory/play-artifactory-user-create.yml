@@ -1,0 +1,15 @@
+- hosts: localhost
+  tasks:
+    - name: "Create/update an artifactory user"
+      artifactory_user:
+        artifactory: "{{ lookup('env','ARTI_HOST') }}"
+        admin_user: "{{ lookup('env','ARTI_USER') }}"
+        admin_user_password: "{{ lookup('env','ARTI_PASS') }}"
+        name: "will"
+        password: "williscool"
+        admin: "false"
+        email: 'w@w'
+        groups: ["useless"]
+      register: result
+
+    - debug: msg=result

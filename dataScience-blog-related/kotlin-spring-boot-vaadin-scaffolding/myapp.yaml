@@ -1,0 +1,23 @@
+server:
+  port: 8080
+spring:
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      database: test
+  datasource:
+    url: "jdbc:mysql://localhost:3306/dbname"
+    username: "root"
+    password: "root"
+    driverClassName: "com.mysql.cj.jdbc.Driver"
+vaadin:
+  servlet:
+    productionMode: false
+myapp:
+  requiredProp: "value"
+  authentication:
+    url: "https://blabla.de"
+    credentials:
+      userName: "asdf"
+      userPassword: "asdf"
